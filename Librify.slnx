@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Librify.Api/Librify.Api.csproj" />
+    <Project Path="src/Librify.Application/Librify.Application.csproj" />
+    <Project Path="src/Librify.Domain/Librify.Domain.csproj" />
+    <Project Path="src/Librify.Infrastructure/Librify.Infrastructure.csproj" />
+  </Folder>
+</Solution>

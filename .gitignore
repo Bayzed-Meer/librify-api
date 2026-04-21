@@ -1,0 +1,28 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.swp
+
+## NuGet
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+
+## Secrets / env
+appsettings.*.local.json
+*.pfx
+*.p12
+secrets.json
+
+## OS
+.DS_Store
+Thumbs.db
+
+## JetBrains
+.idea/
+*.iml
