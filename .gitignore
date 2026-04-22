@@ -26,3 +26,7 @@ Thumbs.db
 ## JetBrains
 .idea/
 *.iml
+
+## Docs
+docs/learning/
+docs/specs/

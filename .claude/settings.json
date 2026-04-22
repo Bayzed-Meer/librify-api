@@ -6,11 +6,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 /Users/bs01618/personal-projects/Librify.Api/.claude/hooks/block_sensitive_files_hook.py"
+            "command": "python3 /Users/bs01618/personal-projects/librify-api/.claude/hooks/block_sensitive_files_hook.py"
           },
           {
             "type": "command",
-            "command": "python3 /Users/bs01618/personal-projects/Librify.Api/.claude/hooks/security_reminder_hook.py"
+            "command": "python3 /Users/bs01618/personal-projects/librify-api/.claude/hooks/security_reminder_hook.py"
           }
         ]
       }
