@@ -29,8 +29,9 @@ Infrastructure → Application
 | Project | Package | Version |
 |---------|---------|---------|
 | Api | Microsoft.AspNetCore.OpenApi | 10.0.3 |
-| Infrastructure | Microsoft.EntityFrameworkCore | 10.0.6 |
-| Infrastructure | Microsoft.EntityFrameworkCore.Design | 10.0.6 |
+| Infrastructure | Microsoft.EntityFrameworkCore | 10.0.7 |
+| Infrastructure | Microsoft.EntityFrameworkCore.Design | 10.0.7 |
+| Infrastructure | Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore | 10.0.7 |
 | Infrastructure | Npgsql.EntityFrameworkCore.PostgreSQL | 10.0.1 |
 
 ## Architecture
@@ -108,7 +109,7 @@ The full development loop uses these commands in order:
 | 3 | `/feature-dev` | Plan + implement with codebase context |
 | 4 | `test-driven-development` skill | Write tests before implementation |
 | 5 | `dotnet-validator` agent | Build + test check |
-| 6 | `/code-review` | Multi-agent review before PR |
+| 6 | `/code-review` | Multi-agent review — must run after `/create-pr` (requires a GitHub PR to exist) |
 | 7 | `/commit` | Conventional commit with checks |
 | 8 | `/create-pr` | Push branch + open GitHub PR |
 | 9 | CI + merge | GitHub Actions validates; merge when green |
