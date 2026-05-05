@@ -98,21 +98,25 @@ chore: update EF Core to 10.0.6
 - Never `--no-verify`
 - No `Co-Authored-By` trailers
 
-## Agent Workflow
+## Agent Workflow (Spec-Driven Development)
 
-The full development loop uses these commands in order:
+This project follows [spec-kit SDD](https://github.com/github/spec-kit). Every feature goes through the full speckit loop:
 
-| Step | Command / Agent | Purpose |
-|------|----------------|---------|
-| 1 | `/spec` | Define feature spec with user interview |
-| 2 | `git checkout -b feat/<name>` | Create feature branch from up-to-date `main` |
-| 3 | `/feature-dev` | Plan + implement with codebase context |
-| 4 | `test-driven-development` skill | Write tests before implementation |
-| 5 | `dotnet-validator` agent | Build + test check |
-| 6 | `/code-review` | Multi-agent review — must run after `/create-pr` (requires a GitHub PR to exist) |
-| 7 | `/commit` | Conventional commit with checks |
-| 8 | `/create-pr` | Push branch + open GitHub PR |
-| 9 | CI + merge | GitHub Actions validates; merge when green |
+| Step | Command | Purpose |
+|------|---------|---------|
+| 1 | `/speckit-constitution` | Establish or update project principles (once per project) |
+| 2 | `/speckit-specify` | Create feature spec from a natural language description |
+| 3 | `/speckit-clarify` | (optional) De-risk ambiguous areas before planning |
+| 4 | `/speckit-git-feature` | Create a feature branch |
+| 5 | `/speckit-plan` | Generate implementation plan from spec |
+| 6 | `/speckit-checklist` | (optional) Validate requirements completeness |
+| 7 | `/speckit-tasks` | Break plan into dependency-ordered tasks |
+| 8 | `/speckit-analyze` | (optional) Cross-artifact consistency check |
+| 9 | `/speckit-implement` | Execute all tasks |
+| 10 | `/speckit-git-commit` | Commit changes with conventional commit message |
+| 11 | `/speckit-git-remote` | Push branch and open GitHub PR |
+
+Specs live in `.specify/specs/<feature-name>/`; run `specify check` to verify setup.
 
 ## Development Commands
 
@@ -130,3 +134,8 @@ dotnet test
 dotnet build
 ```
 
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
