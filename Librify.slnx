@@ -5,4 +5,7 @@
     <Project Path="src/Librify.Domain/Librify.Domain.csproj" />
     <Project Path="src/Librify.Infrastructure/Librify.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Librify.Tests/Librify.Tests.csproj" />
+  </Folder>
 </Solution>

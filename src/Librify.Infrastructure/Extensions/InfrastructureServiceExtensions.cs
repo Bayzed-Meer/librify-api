@@ -1,4 +1,11 @@
+using Librify.Application.Auth.Interfaces;
+using Librify.Application.Auth.Repositories;
+using Librify.Application.Auth.Services;
+using Librify.Domain.Entities;
+using Librify.Infrastructure.Auth;
 using Librify.Infrastructure.Data;
+using Librify.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +27,15 @@ public static class InfrastructureServiceExtensions
 
         services.AddHealthChecks()
             .AddDbContextCheck<AppDbContext>();
+
+        services.AddMemoryCache();
+
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddSingleton<ILoginAttemptTracker, LoginAttemptTracker>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
 
         return services;
     }
