@@ -29,6 +29,8 @@ Infrastructure → Application
 | Project | Package | Version |
 |---------|---------|---------|
 | Api | Microsoft.AspNetCore.OpenApi | 10.0.3 |
+| Application | Mapster | 10.0.7 |
+| Application | Mapster.DependencyInjection | 10.0.7 |
 | Infrastructure | Microsoft.EntityFrameworkCore | 10.0.7 |
 | Infrastructure | Microsoft.EntityFrameworkCore.Design | 10.0.7 |
 | Infrastructure | Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore | 10.0.7 |
@@ -61,6 +63,47 @@ Clean Architecture with layered responsibilities:
 - Use `AsNoTracking()` for read-only queries
 - Never expose `DbContext` outside the Infrastructure layer
 
+## DTO Pattern
+
+All features follow a strict Request / Response / Mapper separation:
+
+- `[Feature]Request` — HTTP input DTO; carries validation attributes; lives in `Application/[Feature]/DTOs/`
+- `[Feature]Response` — HTTP output DTO; shaped for the client; lives in `Application/[Feature]/DTOs/`
+- Domain entities MUST never be returned from a service or controller — always map to a Response DTO first
+
+### Mapster Mapping
+
+Mappings are defined as `IRegister` configuration classes in `Application/[Feature]/Mappers/`:
+
+```csharp
+public class AuthMappingConfig : IRegister
+{
+    public void Register(TypeAdapterConfig config)
+    {
+        config.NewConfig<User, RegisterResponse>()
+            .Map(dest => dest.UserId, src => src.Id);
+    }
+}
+```
+
+- Register all configs via `services.AddMapster()` (scans assemblies automatically with `Mapster.DependencyInjection`)
+- Inject `IMapper` into services — never call `Adapt<T>()` directly in services (use the injected mapper for testability)
+- Prefer explicit field mappings in config — avoid implicit mapping of sensitive fields
+
+### Folder Structure per Feature
+
+```
+Application/
+└── [Feature]/
+    ├── DTOs/
+    │   ├── [Feature]Request.cs
+    │   └── [Feature]Response.cs
+    ├── Mappers/
+    │   └── [Feature]MappingConfig.cs
+    ├── I[Feature]Service.cs
+    └── [Feature]Service.cs
+```
+
 ## API Design
 
 - `[ApiController]` on every controller
@@ -77,10 +120,10 @@ Clean Architecture with layered responsibilities:
 
 ## Testing
 
-No test projects exist yet. When adding tests, scaffold a `*.Tests` project mirroring source structure and add:
-- xUnit + FluentAssertions + NSubstitute (or Moq)
-- Controller tests via `WebApplicationFactory<Program>`
-- Repository tests via EF SQLite in-memory provider
+Tests live in `tests/Librify.Tests/Services/`. Only service-level unit tests are written for this project — controller and repository tests are out of scope.
+
+- xUnit + FluentAssertions + Moq
+- Mock all dependencies; never touch a real database or HTTP pipeline in tests
 - Test naming: `MethodName_StateUnderTest_ExpectedBehavior`
 
 ## Commits
@@ -138,4 +181,5 @@ dotnet build
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
+at `specs/001-user-authentication/plan.md`.
 <!-- SPECKIT END -->

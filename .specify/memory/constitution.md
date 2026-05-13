@@ -8,7 +8,7 @@ Removed sections: N/A
 Templates updated:
   ✅ .specify/templates/plan-template.md — Constitution Check gates already reference this file dynamically; no structural changes required
   ✅ .specify/templates/spec-template.md — No principle-driven mandatory sections added; template remains valid
-  ✅ .specify/templates/tasks-template.md — Test tasks are OPTIONAL per template; constitution mandates tests — mark as required when generating tasks for this project
+  ✅ .specify/templates/tasks-template.md — Test tasks are OPTIONAL per template; constitution mandates service unit tests only — mark service tests as required, omit controller/repository tests when generating tasks for this project
   ✅ .specify/templates/checklist-template.md — Generic; no changes required
 Follow-up TODOs: none — all placeholders resolved
 -->
@@ -32,8 +32,8 @@ Violations of these rules are never acceptable, even for short-term convenience.
 
 Every I/O operation MUST use `async`/`await`. Never use `.Result`, `.Wait()`, or blocking Task continuations — they cause deadlocks in ASP.NET Core.
 
-- Use `ConfigureAwait(false)` in Infrastructure and Application layers.
-- `ConfigureAwait(false)` is not required in the Api layer.
+- Use `ConfigureAwait(false)` in Infrastructure.
+- `ConfigureAwait(false)` is not required in the Api and Application layer.
 - No exceptions to this rule under any circumstances.
 
 ### III. API Contract Standards (NON-NEGOTIABLE)
@@ -56,17 +56,28 @@ Every class that performs I/O or business logic MUST inject `ILogger<T>` — `Co
 
 ### V. Test Coverage is Non-Negotiable
 
-Every public service method, repository method, and controller action MUST have tests before a feature is considered complete.
+Every public Application-layer service method MUST have unit tests before a feature is considered complete. Controller and repository tests are explicitly out of scope for this project.
 
-- Framework: xUnit + FluentAssertions + Moq (or NSubstitute).
-- Controller tests via `WebApplicationFactory<Program>` testing the full HTTP stack.
-- Repository tests via EF SQLite in-memory provider.
+- Framework: xUnit + FluentAssertions + Moq.
+- Mock all dependencies — never touch a real database or HTTP pipeline in tests.
+- Tests live in `tests/Librify.Tests/Services/`.
 - Test naming format: `MethodName_StateUnderTest_ExpectedBehavior`.
 - No commits with failing or skipped tests are permitted.
 
-When generating tasks for this project, test tasks are **required** — not optional.
+When generating tasks for this project, service unit test tasks are **required** — controller and repository test tasks are not generated.
 
-### VI. Simplicity and Explicitness
+### VI. DTO and Mapping Standards (NON-NEGOTIABLE)
+
+Domain entities MUST never cross the Application → Api boundary. Every feature uses the following DTO shape:
+
+- `[Feature]Request` — HTTP input DTO with validation attributes.
+- `[Feature]Response` — HTTP output DTO shaped for the client.
+- Domain entities are mapped to Response DTOs inside the Application service before returning.
+- Mappings are defined as `IRegister` classes (Mapster) in `Application/[Feature]/Mappers/`.
+- Services MUST inject `IMapper` — never call `.Adapt<T>()` directly (breaks testability).
+- Sensitive entity fields (passwords, hashes, internal IDs) MUST use explicit mapping config to prevent accidental exposure.
+
+### VII. Simplicity and Explicitness
 
 Explicit is always preferred over implicit:
 
@@ -76,7 +87,7 @@ Explicit is always preferred over implicit:
 - Records with `required` properties for all DTOs.
 - No premature abstractions — three similar lines are better than a wrong abstraction.
 - YAGNI: do not build for hypothetical future requirements.
-- Default to writing no comments; add one only when the *why* is non-obvious.
+- Default to writing no comments; add one only when the _why_ is non-obvious.
 
 ## Technology Stack
 
@@ -84,9 +95,10 @@ Explicit is always preferred over implicit:
 - **Web**: ASP.NET Core; minimal API wiring in `Program.cs`
 - **ORM**: EF Core 10 via Npgsql (PostgreSQL); `AsNoTracking()` is mandatory for all read-only queries
 - **Database**: PostgreSQL — `localhost:5432`, database `librify`
+- **Mapping**: Mapster 10.0.7 — all Entity → DTO mappings defined as `IRegister` config classes in `Application/[Feature]/Mappers/`; inject `IMapper` into services; never use `Adapt<T>()` directly
 - **DI lifetimes**: Scoped for EF/repositories; Singleton for stateless services; Transient for lightweight utilities
 - **OpenAPI**: `Microsoft.AspNetCore.OpenApi` 10.0.3
-- **Testing**: xUnit, FluentAssertions, Moq/NSubstitute, `WebApplicationFactory<Program>`
+- **Testing**: xUnit, FluentAssertions, Moq (service unit tests only)
 
 ## Development Workflow
 
@@ -123,4 +135,4 @@ This constitution supersedes all other conventions in the project. Any conflict 
 - All pull requests and reviews must verify compliance with the active constitution version.
 - Complexity violations (e.g., extra layers, non-standard patterns) MUST be justified in the plan's Complexity Tracking table before implementation.
 
-**Version**: 1.0.0 | **Ratified**: 2026-05-05 | **Last Amended**: 2026-05-05
+**Version**: 1.1.0 | **Ratified**: 2026-05-05 | **Last Amended**: 2026-05-12

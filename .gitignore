@@ -3,6 +3,7 @@ bin/
 obj/
 *.user
 *.suo
+*.lscache
 .vs/
 *.swp
 
@@ -18,6 +19,7 @@ appsettings.*.local.json
 *.pfx
 *.p12
 secrets.json
+.mcp.json
 
 ## OS
 .DS_Store

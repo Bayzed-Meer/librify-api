@@ -10,7 +10,7 @@ paths:
 ## Framework & Structure
 - Use **xUnit** for all tests — not MSTest or NUnit
 - Use **FluentAssertions** for assertions — not raw `Assert.*`
-- Use **Moq** (or NSubstitute) for mocking — never hand-roll fakes in production test code
+- Use **Moq** for mocking — never hand-roll fakes in production test code
 - One test class per production class; file name mirrors the class under test with `Tests` suffix
 - Arrange / Act / Assert sections separated by a blank line
 
@@ -20,18 +20,16 @@ paths:
 - Use `[Fact]` for single-case tests, `[Theory]` + `[InlineData]` / `[MemberData]` for parameterized
 
 ## What to Test
-- **Required**: every public method, every error/exception path, every branch in business logic
-- **Required**: every EF Core repository method (use in-memory provider or SQLite for speed)
-- **Required**: every controller action via `WebApplicationFactory` integration tests for happy path + error cases
-- **Not required**: trivial property getters/setters with no logic, auto-generated code, framework internals
+- **Required**: every public Application-layer service method — happy path, every error/exception path, every branch in business logic
+- **Not required**: controller actions, repository methods, trivial property getters/setters, auto-generated code, framework internals
 
-## Integration Tests (WebApplicationFactory)
-- Use `WebApplicationFactory<Program>` for HTTP-level controller tests
-- Replace external dependencies (DB, third-party APIs) with test doubles or in-memory equivalents
-- Test the full HTTP stack: status code, response body shape, headers
-- Do not mock `HttpContext` directly — use the full middleware pipeline
+## Scope
+Only service-level unit tests are written for this project. Controller and repository tests are explicitly out of scope.
 
-## Patterns
+- Mock all dependencies (repositories, JWT service, logger, etc.) — never touch a real database or HTTP pipeline in tests
+- Place tests in `tests/Librify.Tests/Services/`
+
+## Pattern
 ```csharp
 // Arrange
 var sut = new BookService(_mockRepo.Object, _mockLogger.Object);
@@ -46,6 +44,6 @@ result!.Title.Should().Be("Expected Title");
 
 ## Mandatory Workflow
 After writing implementation code, agents MUST:
-1. Write xUnit tests for every new service method, repository method, and controller action
+1. Write xUnit unit tests for every new Application-layer service method
 2. Run `dotnet test` and fix all failures before committing
 3. Do NOT commit with failing or skipped tests
