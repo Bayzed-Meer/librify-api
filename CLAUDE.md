@@ -50,10 +50,14 @@ Clean Architecture with layered responsibilities:
 - File-scoped namespaces: `namespace Librify.Api.Controllers;`
 - Explicit access modifiers on all members
 - `async`/`await` everywhere — never `.Result` or `.Wait()`
+- `ConfigureAwait(false)` in Infrastructure layer; not needed in Application or Api layers
+- Use `var` only when the type is obvious from the right-hand side
 - Records for DTOs with `required` properties
 - `ILogger<T>` for all logging
 - Throw specific exception types; let global middleware handle unhandled exceptions
 - Global exception middleware must be registered in `Program.cs` before `MapControllers()`
+- Default to writing no comments; add one only when the _why_ is non-obvious
+- No premature abstractions — YAGNI: do not build for hypothetical future requirements
 
 ## Database
 
@@ -141,23 +145,28 @@ chore: update EF Core to 10.0.6
 - Never `--no-verify`
 - No `Co-Authored-By` trailers
 
+## Quality Gates
+
+- `dotnet build` must pass with zero warnings (warnings are treated as errors)
+- `dotnet test` must pass with zero failures before any commit
+
 ## Agent Workflow (Spec-Driven Development)
 
 This project follows [spec-kit SDD](https://github.com/github/spec-kit). Every feature goes through the full speckit loop:
 
 | Step | Command | Purpose |
 |------|---------|---------|
-| 1 | `/speckit-constitution` | Establish or update project principles (once per project) |
+| 0 | `/speckit-constitution` | Establish or update project principles (once per project) |
+| 1 | `/speckit-git-feature` | Create a feature branch |
 | 2 | `/speckit-specify` | Create feature spec from a natural language description |
 | 3 | `/speckit-clarify` | (optional) De-risk ambiguous areas before planning |
-| 4 | `/speckit-git-feature` | Create a feature branch |
-| 5 | `/speckit-plan` | Generate implementation plan from spec |
-| 6 | `/speckit-checklist` | (optional) Validate requirements completeness |
-| 7 | `/speckit-tasks` | Break plan into dependency-ordered tasks |
-| 8 | `/speckit-analyze` | (optional) Cross-artifact consistency check |
-| 9 | `/speckit-implement` | Execute all tasks |
-| 10 | `/speckit-git-commit` | Commit changes with conventional commit message |
-| 11 | `/speckit-git-remote` | Push branch and open GitHub PR |
+| 4 | `/speckit-plan` | Generate implementation plan from spec |
+| 5 | `/speckit-checklist` | (optional) Validate requirements completeness |
+| 6 | `/speckit-tasks` | Break plan into dependency-ordered tasks |
+| 7 | `/speckit-analyze` | (optional) Cross-artifact consistency check |
+| 8 | `/speckit-implement` | Execute all tasks |
+| 9 | `/speckit-git-commit` | Commit changes with conventional commit message |
+| 10 | `/speckit-git-remote` | Push branch and open GitHub PR |
 
 Specs live in `.specify/specs/<feature-name>/`; run `specify check` to verify setup.
 
@@ -181,5 +190,5 @@ dotnet build
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at `specs/001-user-authentication/plan.md`.
+at `.specify/specs/001-user-authentication/plan.md`.
 <!-- SPECKIT END -->
