@@ -9,12 +9,13 @@ paths:
 ## General C# Style
 - Use explicit access modifiers on all members (`public`, `private`, `protected`, `internal`)
 - Use `var` only when the type is obvious from the right-hand side
-- Prefer `async`/`await` over `.Result`, `.Wait()`, or raw `Task` continuations
-- Never use `.Result` or `.Wait()` on a `Task` — it causes deadlocks in ASP.NET Core
+- MUST use `async`/`await` for all I/O — never `.Result`, `.Wait()`, or raw `Task` continuations (causes deadlocks in ASP.NET Core)
 - Use `ConfigureAwait(false)` in library/infrastructure code; not needed in controller/application code
 - Prefer records for immutable DTOs and value objects
 - Use `required` properties instead of nullable types for mandatory fields
 - Use `file`-scoped namespaces: `namespace Librify.Api.Features.Books;`
+- Default to writing no comments; add one only when the _why_ is non-obvious (hidden constraint, workaround, subtle invariant)
+- No premature abstractions — YAGNI: three similar lines are better than a wrong abstraction; do not build for hypothetical future requirements
 
 ## Naming Conventions
 - Types, methods, properties: `PascalCase`
@@ -41,6 +42,11 @@ paths:
 - Use `AsNoTracking()` for read-only queries
 - Never use raw SQL string interpolation — use `FromSqlInterpolated` or parameterized `ExecuteSqlRaw`
 - Always handle `DbUpdateConcurrencyException` where optimistic concurrency applies
+
+## Build Quality
+
+- `dotnet build` must pass with zero warnings — warnings are treated as errors
+- `dotnet test` must pass with zero failures before any commit
 
 ## Error Handling
 - Use `ILogger<T>` for all logging — never `Console.WriteLine` in production code
